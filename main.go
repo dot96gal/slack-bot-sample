@@ -73,7 +73,11 @@ func main() {
 					innerEvent := eventsAPIEvent.InnerEvent
 					switch ev := innerEvent.Data.(type) {
 					case *slackevents.AppMentionEvent:
-						_, _, err := client.PostMessage(ev.Channel, slack.MsgOptionText("Yes, hello.", false))
+						_, _, err := client.PostMessage(
+							ev.Channel,
+							slack.MsgOptionTS(ev.TimeStamp), // Reply in thread
+							slack.MsgOptionText("Yes, hello.", false),
+						)
 						if err != nil {
 							fmt.Printf("failed posting message: %v", err)
 						}
