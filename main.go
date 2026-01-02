@@ -45,6 +45,13 @@ func main() {
 		slack.OptionAppLevelToken(appToken),
 	)
 
+	authTest, err := api.AuthTest()
+	if err != nil {
+		slog.Error("failed to get bot ID", "error", err)
+		os.Exit(1)
+	}
+	botID := authTest.UserID
+
 	client := socketmode.New(
 		api,
 		socketmode.OptionDebug(true),
@@ -91,6 +98,11 @@ func main() {
 						}
 					case *slackevents.MessageEvent:
 						if ev.BotID != "" {
+							break
+						}
+
+						if strings.Contains(ev.Text, fmt.Sprintf("<@%s>", botID)) {
+							slog.Info("message mentions bot", "BotId", botID)
 							break
 						}
 
